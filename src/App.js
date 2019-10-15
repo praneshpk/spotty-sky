@@ -1,10 +1,7 @@
 import React from 'react';
+import Player from './components/Player';
 import './styles/global.scss';
 
-export default function App() {
-  return (
-    <div className="App">
-      Hello World
-    </div>
-  );
-}
+const App = () => <Player />;
+
+export default App;
