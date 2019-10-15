@@ -1,9 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { redirect } from '../actions';
+import { generateToken, setToken, deleteToken } from '../actions';
 
-import { authEndpoint, clientId, redirectUri, setCookie, getCookie, deleteCookie } from '../config';
+import { authEndpoint, clientId, redirectUri, getCookie} from '../config';
 
 import { BrowserRouter as Router, Route, Redirect } from "react-router-dom";
 
@@ -11,35 +11,33 @@ import { BrowserRouter as Router, Route, Redirect } from "react-router-dom";
 const Login = ({ token, dispatch }) => {
   const loginUrl = `${authEndpoint}?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=token&show_dialog=true`;
 
-  const setToken = () => {
-    if(!getCookie('token'))
-      dispatch(redirect(window.location.hash));
+  const redirect = () => {
+    dispatch(generateToken(window.location.hash));
     return <Redirect to="/" />;
   };
 
   const logout = () => {
-    deleteCookie('token');
+    dispatch(deleteToken());
     return <Redirect to="/" />;
   }
 
-  let login = <a className="btn" href={loginUrl}>Login to Spotify</a>;
-
-  if(token) {
-    setCookie('token', token['access_token'], token['expires_in']);
-    login = <a className="btn" href="/logout">Logout</a>;
-  } 
+  // Restores login session if cookie is still valid
+  if(getCookie('token') && !token) {
+    dispatch(setToken(getCookie('token')));
+  }
   
   return (
     <Router>
-      {login}
-      <Route path="/redirect" component={setToken} />
+      { token ? 
+        <a className="btn" href="/logout">Logout</a> :
+        <a className="btn" href={loginUrl}>Login to Spotify</a> }
+      <Route path="/redirect" component={redirect} />
       <Route path="/logout" component={logout} />
     </Router>
   );
 }
 
-const mapStateToProps = state => ({
-  token: state.auth.token
-});
+
+const mapStateToProps = state => ({ token: state.auth.token });
 
 export default connect(mapStateToProps)(Login);
