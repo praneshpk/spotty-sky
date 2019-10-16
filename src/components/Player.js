@@ -11,20 +11,17 @@ const Player = ({ token, dispatch }) => {
 
   const getWeather = () => {
     let url = `https://community-open-weather-map.p.rapidapi.com/weather?q=${encodeURIComponent(loc)}`
-    try {
-      const data = fetch(url, {
-        "method": "GET",
-        "headers": {
-          "x-rapidapi-host": "community-open-weather-map.p.rapidapi.com",
-          "x-rapidapi-key": "15fe13f990msha0b23062c32707cp148f84jsn17e58c929a3f"
-        }
-      }).then(response => {
-        console.log(response)
-      });
+    const data = fetch(url, {
+      "method": "GET",
+      "headers": {
+        "x-rapidapi-host": "community-open-weather-map.p.rapidapi.com",
+        "x-rapidapi-key": "15fe13f990msha0b23062c32707cp148f84jsn17e58c929a3f"
+      }
+    }).then(response => response.json())
+    .catch(err => console.log(err))
+    .then(data => console.log(data));
 
-    } catch(e) {
-      console.error(e);
-    }
+
   }
 
   if(token) {
