@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import { generateToken, setToken, deleteToken } from '../actions';
 
-import { authEndpoint, clientId, redirectUri, getCookie} from '../config';
+import { authEndpoint, clientId, redirectUri, getCookie} from '../util';
 
 import { BrowserRouter as Router, Route, Redirect } from "react-router-dom";
 
