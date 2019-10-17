@@ -2,6 +2,7 @@ export const authEndpoint = 'https://accounts.spotify.com/authorize';
 
 export const clientId = '878fc98b349842e59c5c057bb5dff9ff';
 export const redirectUri = 'http://localhost:3000/redirect';
+export const scopes = encodeURIComponent('user-top-read');
 
 export function getCookie(name) {
   const v = document.cookie.match(`(^|;) ?${name}=([^;]*)(;|$)`);

@@ -6,24 +6,20 @@ import { updateWeather } from '../actions';
 // import { createPlayer } from '../util';
 
 import './Player.scss';
+import { getTopTracks, getAudioFeatures } from '../api/Spotify';
 
 // eslint-disable-next-line react/prop-types
 const Player = ({ token, dispatch }) => {
   let player;
 
   const [desc, setDesc] = useState();
+  const [tracks, setTracks] = useState([]);
 
-  // Fetch weather data based on location
   useEffect(() => {
     let loc = 'q=New York, NY, US';
 
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((pos) => {
-        loc = `lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`;
-      });
-    }
-
-    (async () => {
+    // Fetch weather data based on location
+    async function getWeather() {
       const url = `https://community-open-weather-map.p.rapidapi.com/weather?${loc}&units=imperial`;
       const response = await fetch(url, {
         method: 'GET',
@@ -35,16 +31,37 @@ const Player = ({ token, dispatch }) => {
       const json = await response.json();
       dispatch(updateWeather(json));
       setDesc(`Music based on ${json.name} weather...`);
-    })();
-  }, [dispatch]);
+
+      // Gets audio features for user's top tracks
+      if (token) {
+        const topTracks = await Promise.all(
+          (await getTopTracks(token)).items.map(
+            async (e) => getAudioFeatures(e.id, token),
+          ),
+        );
+        console.log(topTracks);
+      }
+    }
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((pos) => {
+        loc = `lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`;
+        getWeather();
+      }, () => getWeather());
+    } else {
+      getWeather();
+    }
+  }, [dispatch, token]);
 
   if (token) {
     player = (
       <div className="player__container">
+        {token}
         <h1>Player</h1>
         {/* <input onChange={(e) => setLoc(e.target.value)} value={loc} /> */}
         {/* <button type="submit" onClick={getWeather}>Submit</button> */}
         <h1>{ desc }</h1>
+        <ul>{ tracks }</ul>
       </div>
     );
   }
