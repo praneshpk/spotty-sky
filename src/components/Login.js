@@ -1,12 +1,14 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 
 import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom';
 import { generateToken, setToken, deleteToken } from '../actions';
 
+import { getCookie } from '../util/cookies';
+
 import {
-  authEndpoint, clientId, redirectUri, getCookie, scopes,
-} from '../api/util';
+  authEndpoint, clientId, redirectUri, scopes,
+} from '../util/SpotifyAPI';
 
 const Login = ({ token, dispatch }) => {
   const loginUrl = `${authEndpoint}?client_id=${clientId}${scopes && `&scope=${scopes}`}&redirect_uri=${redirectUri}&response_type=token&show_dialog=true`;
@@ -21,10 +23,14 @@ const Login = ({ token, dispatch }) => {
     return <Redirect to="/" />;
   };
 
-  // Restores login session if cookie is still valid
-  if (getCookie('token') && !token) {
-    dispatch(setToken(getCookie('token')));
-  }
+  useEffect(() => {
+    console.log(getCookie('token'));
+    // Restores login session if cookie is still valid
+    if (getCookie('token') && !token) {
+      dispatch(setToken(getCookie('token')));
+    }
+  }, [dispatch, token]);
+
 
   return (
     <div className="login">

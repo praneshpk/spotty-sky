@@ -1,4 +1,4 @@
-import { setCookie, deleteCookie } from '../api/util';
+import { setCookie, deleteCookie } from '../util/cookies';
 
 export const setToken = (token) => ({
   type: 'GEN_TOKEN',
