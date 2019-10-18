@@ -4,9 +4,10 @@ export const clientId = '878fc98b349842e59c5c057bb5dff9ff';
 export const redirectUri = 'http://localhost:3000/redirect';
 export const scopes = encodeURIComponent('user-top-read playlist-modify-public playlist-modify-private');
 
-export async function getTopTracks(page = 0, token) {
-  const pageSize = 50;
-  const res = await fetch(`https://api.spotify.com/v1/me/top/tracks?limit=${pageSize}&offset=${page * pageSize}`, {
+export async function getTopType({
+  token, type, page = 0, limit = 5,
+}) {
+  const res = await fetch(`https://api.spotify.com/v1/me/top/${type}?limit=${limit}&offset=${page * limit}`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -15,7 +16,17 @@ export async function getTopTracks(page = 0, token) {
   return res.json();
 }
 
-export async function getAudioFeatures(ids, token) {
+export async function getRecommendations({ token, limit = 50, seedArtists = [] }) {
+  const res = await fetch(`https://api.spotify.com/v1/recommendations?limit=${limit}&seed_artists=${seedArtists.join(',')}`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return res.json();
+}
+
+export async function getAudioFeatures(token, ids) {
   const res = await fetch(`https://api.spotify.com/v1/audio-features/?ids=${ids.join(',')}`, {
     method: 'GET',
     headers: {
@@ -35,8 +46,10 @@ export async function getUserProfile(token) {
   return res.json();
 }
 
-export async function createPlaylist(userId, name, description, token) {
-  const res = fetch(`https://api.spotify.com/v1/users/${userId}/playlists`, {
+export async function createPlaylist({
+  token, userId, name, description,
+}) {
+  const res = await fetch(`https://api.spotify.com/v1/users/${userId}/playlists`, {
     method: 'POST',
     headers: {
       Accept: 'application/json',
@@ -48,6 +61,17 @@ export async function createPlaylist(userId, name, description, token) {
       description,
       public: false,
     }),
+  });
+  return (await res.json()).id;
+}
+
+export async function addToPlaylist({ token, playlistId, tracks }) {
+  const res = fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks?uris=${tracks.join(',')}`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
   });
   return res;
 }

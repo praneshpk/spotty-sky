@@ -7,7 +7,7 @@ import { updateWeather } from '../actions';
 
 import './Player.scss';
 import {
-  createPlaylist, getTopTracks, getAudioFeatures, getUserProfile,
+  createPlaylist, getTopTracks, getAudioFeatures, getUserProfile, addToPlaylist, getTopType, getRecommendations,
 } from '../util/SpotifyAPI';
 
 // eslint-disable-next-line react/prop-types
@@ -37,43 +37,67 @@ const Player = ({ token, dispatch }) => {
 
       // Gets audio features for user's top tracks
       const userProfile = await getUserProfile(token);
-      console.log(userProfile);
-      // // Creates the playlist
-      // const res = await createPlaylist(userProfile.id, `s`, 'description blah blah', token);
-      // console.log(res.json());
 
-      const playlistLength = 31;
+      const playlistLength = 30;
       let playlist = [];
-      function sleep(ms) {
-        return new Promise((resolve) => setTimeout(resolve, ms));
+      // function sleep(ms) {
+      //   return new Promise((resolve) => setTimeout(resolve, ms));
+      // }
+      // let i = 0;
+      // while (playlist.length < playlistLength) {
+      //   if (i > 0) { sleep(1000); }
+      try {
+        // const topTrackIds = Promise.all(
+        //   (await getTopTracks({ token })).items.map((e) => e.id),
+        // );
+        const topArtists = await getTopType({
+          token,
+          type: 'artists',
+        });
+        const topArtistIds = Promise.all(topArtists.items.map((e) => e.id));
+        // console.log(topArtistIds);
+
+        const recs = await getRecommendations({
+          token,
+          seedArtists: await topArtistIds,
+        });
+        console.log(recs);
+
+        let audioTracks = await getAudioFeatures(token, recs.tracks);
+        audioTracks = audioTracks.audio_features.filter((e) => {
+          const delta = e.valence - data.clouds.all * 0.01;
+          return delta > 0.5;
+        });
+        playlist = [...playlist, ...audioTracks];
+      } catch (e) {
+        console.log(e);
+        // break;
       }
-      const i = 0;
-      while (playlist.length < playlistLength) {
-        if (i > 0) { sleep(1000); }
-        try {
-          const topTrackIds = Promise.all((await getTopTracks(i, token)).items.map((e) => e.id));
-          const audioTrackIds = await getAudioFeatures(await topTrackIds, token);
-          // const audioTracks = (await topTracks).filter((e) => {
-          //   const delta = e.valence - data.clouds.all * 0.01;
-          //   return delta > 0.5;
-          // // return e.valence >= 1 - data.clouds.all * 0.01;
-          // });
-          playlist = [...playlist, ...audioTrackIds.audio_features];
-          console.log(playlist);
-        } catch (e) {
-          console.log(e);
-          break;
-        }
-      }
-      // setTracks(playlist.map((e) => (
-      //   <tr key={e.id}>
-      //     <td>{e.valence}</td>
-      //     <td><a href={e.uri}>{e.uri}</a></td>
-      //   </tr>
-      // )));
+      //   i += 1;
+      // }
+
+      // // Create a playlist
+      // const playlistId = await createPlaylist({
+      //   token,
+      //   userId: userProfile.id,
+      //   name: 'spotty-sky-playlist',
+      //   description: '',
+      // });
+      // addToPlaylist({
+      //   token,
+      //   playlistId,
+      //   tracks: playlist.slice(0, playlistLength).map((e) => e.uri),
+      // });
+
+      // Print to screen
+      setTracks(playlist.slice(0, playlistLength).map((e) => (
+        <tr key={e.id}>
+          <td>{e.valence}</td>
+          <td><a href={e.uri}>{e.uri}</a></td>
+        </tr>
+      )));
     }
-    // }, 10000);
-    // }
+
     if (token) {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition((pos) => {
