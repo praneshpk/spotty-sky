@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { connect } from 'react-redux';
+import React, { useState, useEffect, useRef } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 
 import Login from './Login';
+import Code from './Code';
 import { updateWeather } from '../actions';
-// import { createPlayer } from '../util';
 
 import './Player.scss';
 import {
@@ -11,11 +11,65 @@ import {
 } from '../util/SpotifyAPI';
 
 // eslint-disable-next-line react/prop-types
-const Player = ({ token, dispatch }) => {
+export default function Player() {
   let player;
 
+  const token = useSelector((state) => state.auth.token);
+  const weather = useSelector((state) => state.weather);
+  const dispatch = useDispatch();
+
   const [desc, setDesc] = useState();
-  const [tracks, setTracks] = useState([]);
+  const [playlist, setPlaylist] = useState([]);
+  const playlistLength = 30;
+  const [background, setBackground] = useState('rbga(255,255,255,1)');
+
+  const playlistName = useRef(null);
+
+
+  async function loadSongs(weatherData) {
+    let plist = [];
+    try {
+      const topSongs = await getTopType({
+        token,
+        type: 'tracks',
+      });
+      const topSongIds = Promise.all(topSongs.items.map((e) => e.id));
+
+      const recs = await getRecommendations({
+        token,
+        seedTracks: await topSongIds,
+      });
+
+      let audioTracks = await getAudioFeatures(token, recs.tracks.map((e) => e.id));
+      audioTracks = audioTracks.audio_features.filter((e) => {
+        const delta = Math.abs(e.valence - weatherData.clouds.all * 0.01);
+        return delta > 0.5;
+      });
+      plist = [...plist, ...audioTracks];
+    } catch (e) {
+      console.log(e);
+    // break;
+    }
+    setPlaylist(plist);
+    // return plist;
+  }
+
+  async function savePlaylist(name, limit, plist) {
+    const userProfile = await getUserProfile(token);
+
+    const date = new Date();
+    const playlistId = await createPlaylist({
+      token,
+      userId: userProfile.id,
+      name,
+      description: `Created on ${date.getMonth() + 1}/${date.getDate()} via ${window.location}`,
+    });
+    addToPlaylist({
+      token,
+      playlistId,
+      tracks: plist.slice(0, limit).map((e) => e.uri),
+    });
+  }
 
   useEffect(() => {
     let loc = 'q=New York, NY, US';
@@ -31,73 +85,10 @@ const Player = ({ token, dispatch }) => {
         },
       });
       const data = await response.json();
-      console.log(data);
+      setBackground(`rgba(255,167,22,${1 - data.clouds.all * 0.01})`);
       dispatch(updateWeather(data));
       setDesc(`Music based on ${data.name} weather...`);
-
-      // Gets audio features for user's top tracks
-      const userProfile = await getUserProfile(token);
-
-      const playlistLength = 30;
-      let playlist = [];
-      // function sleep(ms) {
-      //   return new Promise((resolve) => setTimeout(resolve, ms));
-      // }
-      // let i = 0;
-      // while (playlist.length < playlistLength) {
-      //   if (i > 0) { sleep(1000); }
-      try {
-        // const topTrackIds = Promise.all(
-        //   (await getTopTracks({ token })).items.map((e) => e.id),
-        // );
-        const topArtists = await getTopType({
-          token,
-          type: 'artists',
-        });
-        const topArtistIds = Promise.all(topArtists.items.map((e) => e.id));
-        // console.log(topArtistIds);
-
-        const recs = await getRecommendations({
-          token,
-          seedArtists: await topArtistIds,
-        });
-        console.log(recs);
-
-        let audioTracks = await getAudioFeatures(token, recs.tracks);
-        audioTracks = audioTracks.audio_features.filter((e) => {
-          const delta = e.valence - data.clouds.all * 0.01;
-          return delta > 0.5;
-        });
-        playlist = [...playlist, ...audioTracks];
-      } catch (e) {
-        console.log(e);
-        // break;
-      }
-      //   i += 1;
-      // }
-
-      // // Create a playlist
-      // const playlistId = await createPlaylist({
-      //   token,
-      //   userId: userProfile.id,
-      //   name: 'spotty-sky-playlist',
-      //   description: '',
-      // });
-      // addToPlaylist({
-      //   token,
-      //   playlistId,
-      //   tracks: playlist.slice(0, playlistLength).map((e) => e.uri),
-      // });
-
-      // Print to screen
-      setTracks(playlist.slice(0, playlistLength).map((e) => (
-        <tr key={e.id}>
-          <td>{e.valence}</td>
-          <td><a href={e.uri}>{e.uri}</a></td>
-        </tr>
-      )));
     }
-
     if (token) {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition((pos) => {
@@ -117,33 +108,30 @@ const Player = ({ token, dispatch }) => {
         {/* <input onChange={(e) => setLoc(e.target.value)} value={loc} /> */}
         {/* <button type="submit" onClick={getWeather}>Submit</button> */}
         <h1>{ desc }</h1>
-        <table>
-          <thead>
-            <tr>
-              <th>Valence</th>
-              <th>URI</th>
-            </tr>
-          </thead>
-          <tbody>
-            { tracks }
-          </tbody>
 
-        </table>
+        {playlist.length > 0
+          && (
+            <form className="playlist-save">
+              <input type="text" placeholder="My awesome playlist" ref={playlistName} />
+              <button type="button" onClick={() => savePlaylist(playlistName.current.value, playlistLength, playlist)}>Save playlist</button>
+            </form>
+          )}
+        <button type="button" onClick={async () => loadSongs(weather)}>Load Songs</button>
+
+        <Code title="Weather (JSON Response)">
+          {JSON.stringify(weather)}
+        </Code>
+        <Code title="Playlist">
+          {JSON.stringify(playlist)}
+        </Code>
       </div>
     );
   }
 
   return (
-    <div className="player">
+    <div className="player" style={{ background }}>
       <Login />
       { player }
     </div>
   );
-};
-
-const mapStateToProps = (state) => ({
-  token: state.auth.token,
-  weather: state.weather,
-});
-
-export default connect(mapStateToProps)(Player);
+}

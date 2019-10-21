@@ -1,0 +1,39 @@
+code {
+  display: block;
+  margin: 1rem 0;
+  background: #000;
+  color: #fff;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+
+
+  label {
+    padding: 1rem;
+    display:block;
+    cursor: pointer;
+    user-select: none;
+  }
+  input[type=checkbox] {
+    display: none;
+
+    &:checked {
+      & ~ .title { 
+        font-weight: bold; 
+        &::after {
+          transform: rotate(90deg);
+        }
+      }
+      & ~ .content { display: block; }
+    }
+  }
+  .title::after {
+    float:right;
+    transition: all 200ms linear;
+    content: '\25B6';
+  }
+  .content {
+    display: none;
+    margin-top: 1rem;
+    overflow-wrap: break-word;
+  }
+}

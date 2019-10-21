@@ -16,8 +16,12 @@ export async function getTopType({
   return res.json();
 }
 
-export async function getRecommendations({ token, limit = 50, seedArtists = [] }) {
-  const res = await fetch(`https://api.spotify.com/v1/recommendations?limit=${limit}&seed_artists=${seedArtists.join(',')}`, {
+export async function getRecommendations({
+  token, limit = 100, seedArtists, seedTracks,
+}) {
+  let seeds = seedArtists ? `&seed_artists=${seedArtists.join(',')}` : '';
+  seeds = seedTracks ? `${seeds}&seed_tracks=${seedTracks.join(',')}` : seeds;
+  const res = await fetch(`https://api.spotify.com/v1/recommendations?limit=${limit}${seeds}`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -49,6 +53,7 @@ export async function getUserProfile(token) {
 export async function createPlaylist({
   token, userId, name, description,
 }) {
+  const title = name || `spotty sky playlist - ${(new Date()).toLocaleDateString()}`;
   const res = await fetch(`https://api.spotify.com/v1/users/${userId}/playlists`, {
     method: 'POST',
     headers: {
@@ -57,7 +62,7 @@ export async function createPlaylist({
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      name,
+      name: title,
       description,
       public: false,
     }),

@@ -1,7 +1,11 @@
 .player {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
+   transition: background 1s linear;
+   background-blend-mode: darken;
+   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+   display: flex;
+   flex-direction: column;
+   padding: 1em;
+   height: 100%;
 
  .player__container{
     //background: #000;
