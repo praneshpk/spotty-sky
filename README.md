@@ -3,6 +3,7 @@ music based on the weather
 
 ### To-dos:
 - [x] Fetch data from weather API
+  - [ ] Move weather API logic to WeatherAPI.js
   - [ ] Style background based on weather
   - [ ] User parameterization of feelings based on weather
 - [x] Fetch data from Spotify API
