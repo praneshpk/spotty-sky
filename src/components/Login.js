@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom';
 import { generateToken, setToken, deleteToken } from '../actions';
@@ -10,8 +10,10 @@ import {
   authEndpoint, clientId, redirectUri, scopes,
 } from '../util/SpotifyAPI';
 
-const Login = ({ token, dispatch }) => {
+export default function Login() {
   const loginUrl = `${authEndpoint}?client_id=${clientId}${scopes && `&scope=${scopes}`}&redirect_uri=${redirectUri}&response_type=token&show_dialog=true`;
+  const dispatch = useDispatch();
+  const token = useSelector((state) => state.auth.token);
 
   const redirect = () => {
     dispatch(generateToken(window.location.hash));
@@ -43,8 +45,4 @@ const Login = ({ token, dispatch }) => {
       </Router>
     </div>
   );
-};
-
-const mapStateToProps = (state) => ({ token: state.auth.token });
-
-export default connect(mapStateToProps)(Login);
+}

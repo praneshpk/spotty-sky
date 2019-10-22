@@ -6,9 +6,7 @@ import Code from './Code';
 import { updateWeather } from '../actions';
 
 import './Player.scss';
-import {
-  createPlaylist, getTopTracks, getAudioFeatures, getUserProfile, addToPlaylist, getTopType, getRecommendations,
-} from '../util/SpotifyAPI';
+import { loadSongs, savePlaylist } from '../util/PlayerEngine';
 
 // eslint-disable-next-line react/prop-types
 export default function Player() {
@@ -20,56 +18,10 @@ export default function Player() {
 
   const [desc, setDesc] = useState();
   const [playlist, setPlaylist] = useState([]);
-  const playlistLength = 30;
+  const limit = 30;
   const [background, setBackground] = useState('rbga(255,255,255,1)');
 
   const playlistName = useRef(null);
-
-
-  async function loadSongs(weatherData) {
-    let plist = [];
-    try {
-      const topSongs = await getTopType({
-        token,
-        type: 'tracks',
-      });
-      const topSongIds = Promise.all(topSongs.items.map((e) => e.id));
-
-      const recs = await getRecommendations({
-        token,
-        seedTracks: await topSongIds,
-      });
-
-      let audioTracks = await getAudioFeatures(token, recs.tracks.map((e) => e.id));
-      audioTracks = audioTracks.audio_features.filter((e) => {
-        const delta = Math.abs(e.valence - weatherData.clouds.all * 0.01);
-        return delta > 0.5;
-      });
-      plist = [...plist, ...audioTracks];
-    } catch (e) {
-      console.log(e);
-    // break;
-    }
-    setPlaylist(plist);
-    // return plist;
-  }
-
-  async function savePlaylist(name, limit, plist) {
-    const userProfile = await getUserProfile(token);
-
-    const date = new Date();
-    const playlistId = await createPlaylist({
-      token,
-      userId: userProfile.id,
-      name,
-      description: `Created on ${date.getMonth() + 1}/${date.getDate()} via ${window.location}`,
-    });
-    addToPlaylist({
-      token,
-      playlistId,
-      tracks: plist.slice(0, limit).map((e) => e.uri),
-    });
-  }
 
   useEffect(() => {
     let loc = 'q=New York, NY, US';
@@ -104,24 +56,30 @@ export default function Player() {
   if (token) {
     player = (
       <div className="player__container">
-        <h1>Player</h1>
-        {/* <input onChange={(e) => setLoc(e.target.value)} value={loc} /> */}
-        {/* <button type="submit" onClick={getWeather}>Submit</button> */}
-        <h1>{ desc }</h1>
+        <h1>Spotty Sky</h1>
+        <h2>{ desc }</h2>
+        <div className="flex controls">
+          <button type="button" onClick={async () => setPlaylist(await loadSongs(token, weather))}>Load Songs</button>
 
-        {playlist.length > 0
+          {playlist.length > 0
           && (
-            <form className="playlist-save">
+            <div>
               <input type="text" placeholder="My awesome playlist" ref={playlistName} />
-              <button type="button" onClick={() => savePlaylist(playlistName.current.value, playlistLength, playlist)}>Save playlist</button>
-            </form>
+              <button
+                type="button"
+                onClick={() => savePlaylist({
+                  token, name: playlistName.current.value, limit, playlist,
+                })}
+              >
+              Save playlist
+              </button>
+            </div>
           )}
-        <button type="button" onClick={async () => loadSongs(weather)}>Load Songs</button>
-
+        </div>
         <Code title="Weather (JSON Response)">
           {JSON.stringify(weather)}
         </Code>
-        <Code title="Playlist">
+        <Code title="Playlist (JSON Response)">
           {JSON.stringify(playlist)}
         </Code>
       </div>
