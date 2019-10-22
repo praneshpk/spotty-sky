@@ -10,6 +10,7 @@ music based on the weather
   - [ ] Make playlist embeddable after saving
 - [x] Basic: Interpret data to asssemble playlist
 - [ ] Add success / failure messages after API calls
+- [ ] Add test cases
 
 ## Developer's Guide
 
