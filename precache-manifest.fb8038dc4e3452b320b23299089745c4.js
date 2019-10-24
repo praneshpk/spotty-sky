@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "1a2c21e75b62ad809dde66d6bdc31840",
+    "revision": "4df65c67dac19a859f7dcffe203f4a25",
     "url": "/spotty-sky/index.html"
   },
   {

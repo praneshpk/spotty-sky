@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/spotty-sky/precache-manifest.3026c99540f72532b0ec6bb16a0a7a63.js"
+  "/spotty-sky/precache-manifest.fb8038dc4e3452b320b23299089745c4.js"
 );
 
 self.addEventListener('message', (event) => {
