@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom';
+import { HashRouter, Route, Redirect } from 'react-router-dom';
 import { generateToken, setToken, deleteToken } from '../actions';
 
 import { getCookie } from '../util/cookies';
@@ -16,7 +16,8 @@ export default function Login() {
   const token = useSelector((state) => state.auth.token);
 
   const redirect = () => {
-    dispatch(generateToken(window.location.hash));
+    const hash = window.location.hash.split('#')[2];
+    if (hash) { dispatch(generateToken(hash)); }
     return <Redirect to="/" />;
   };
 
@@ -39,10 +40,10 @@ export default function Login() {
       { token
         ? <a className="btn" href="/logout">Logout</a>
         : <a className="btn" href={loginUrl}>Login to Spotify</a> }
-      <Router>
+      <HashRouter basename="/">
         <Route path="/redirect" component={redirect} />
         <Route path="/logout" component={logout} />
-      </Router>
+      </HashRouter>
     </div>
   );
 }
