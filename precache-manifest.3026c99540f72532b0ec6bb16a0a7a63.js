@@ -1,10 +1,10 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "651c1e2a3bae772ad33b7a56f5e1d85c",
+    "revision": "1a2c21e75b62ad809dde66d6bdc31840",
     "url": "/spotty-sky/index.html"
   },
   {
-    "revision": "8d171c5fcd2b19ad6766",
+    "revision": "feb86decb3ff775a93b1",
     "url": "/spotty-sky/static/css/main.9054eb22.chunk.css"
   },
   {
@@ -12,8 +12,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/spotty-sky/static/js/2.85ec58fc.chunk.js"
   },
   {
-    "revision": "8d171c5fcd2b19ad6766",
-    "url": "/spotty-sky/static/js/main.4eead8ed.chunk.js"
+    "revision": "feb86decb3ff775a93b1",
+    "url": "/spotty-sky/static/js/main.409afb1f.chunk.js"
   },
   {
     "revision": "794cd4a43261705a0131",
