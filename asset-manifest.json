@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/spotty-sky/static/css/main.9054eb22.chunk.css",
-    "main.js": "/spotty-sky/static/js/main.d0e9c06e.chunk.js",
-    "main.js.map": "/spotty-sky/static/js/main.d0e9c06e.chunk.js.map",
+    "main.js": "/spotty-sky/static/js/main.4eead8ed.chunk.js",
+    "main.js.map": "/spotty-sky/static/js/main.4eead8ed.chunk.js.map",
     "runtime-main.js": "/spotty-sky/static/js/runtime-main.aab477a3.js",
     "runtime-main.js.map": "/spotty-sky/static/js/runtime-main.aab477a3.js.map",
     "static/js/2.85ec58fc.chunk.js": "/spotty-sky/static/js/2.85ec58fc.chunk.js",
     "static/js/2.85ec58fc.chunk.js.map": "/spotty-sky/static/js/2.85ec58fc.chunk.js.map",
     "index.html": "/spotty-sky/index.html",
-    "precache-manifest.55a053b2338c3be9e5c83277648516d9.js": "/spotty-sky/precache-manifest.55a053b2338c3be9e5c83277648516d9.js",
+    "precache-manifest.3cc2edc30ce51e361752012d42424ef8.js": "/spotty-sky/precache-manifest.3cc2edc30ce51e361752012d42424ef8.js",
     "service-worker.js": "/spotty-sky/service-worker.js",
     "static/css/main.9054eb22.chunk.css.map": "/spotty-sky/static/css/main.9054eb22.chunk.css.map"
   },
@@ -16,6 +16,6 @@
     "static/js/runtime-main.aab477a3.js",
     "static/js/2.85ec58fc.chunk.js",
     "static/css/main.9054eb22.chunk.css",
-    "static/js/main.d0e9c06e.chunk.js"
+    "static/js/main.4eead8ed.chunk.js"
   ]
 }
