@@ -40,7 +40,7 @@ export async function savePlaylist({
     token,
     userId: userProfile.id,
     name,
-    description: `Created on ${date.getMonth() + 1}/${date.getDate()} via ${window.location}`,
+    description: `Created on ${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear().toString().substr(-2)} via Spotty Sky! (${window.location})`,
   });
   addToPlaylist({
     token,

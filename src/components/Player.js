@@ -64,7 +64,7 @@ export default function Player() {
           {playlist.length > 0
           && (
             <div>
-              <input type="text" placeholder="My awesome playlist" ref={playlistName} />
+              <input type="text" placeholder="My Awesome Playlist" ref={playlistName} />
               <button
                 type="button"
                 onClick={() => savePlaylist({

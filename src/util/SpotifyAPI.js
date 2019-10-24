@@ -53,7 +53,7 @@ export async function getUserProfile(token) {
 export async function createPlaylist({
   token, userId, name, description,
 }) {
-  const title = name || `spotty sky playlist - ${(new Date()).toLocaleDateString()}`;
+  const title = name || 'My Awesome Playlist';
   const res = await fetch(`https://api.spotify.com/v1/users/${userId}/playlists`, {
     method: 'POST',
     headers: {
