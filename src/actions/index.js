@@ -6,7 +6,7 @@ export const setToken = (token) => ({
 });
 export function generateToken(hash) {
   const res = {};
-  hash.substring(1).split('&').forEach((item) => {
+  hash.split('&').forEach((item) => {
     res[item.split('=')[0]] = decodeURIComponent(item.split('=')[1]);
   });
   setCookie('token', res.access_token, res.expires_in);

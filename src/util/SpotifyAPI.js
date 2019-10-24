@@ -1,7 +1,7 @@
 export const authEndpoint = 'https://accounts.spotify.com/authorize';
 
 export const clientId = '878fc98b349842e59c5c057bb5dff9ff';
-export const redirectUri = `${window.location}/#/redirect`;
+export const redirectUri = encodeURIComponent(`${window.location.href.split(/\?|#/)[0]}#/redirect`);
 export const scopes = encodeURIComponent('user-top-read playlist-modify-public playlist-modify-private');
 
 export async function getTopType({

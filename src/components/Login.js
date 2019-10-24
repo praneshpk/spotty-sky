@@ -16,8 +16,7 @@ export default function Login() {
   const token = useSelector((state) => state.auth.token);
 
   const redirect = () => {
-    const hash = window.location.hash.split('#')[2];
-    if (hash) { dispatch(generateToken(hash)); }
+    dispatch(generateToken(window.location.hash.substring(2)));
     return <Redirect to="/" />;
   };
 
@@ -27,7 +26,6 @@ export default function Login() {
   };
 
   useEffect(() => {
-    console.log(getCookie('token'));
     // Restores login session if cookie is still valid
     if (getCookie('token') && !token) {
       dispatch(setToken(getCookie('token')));
@@ -38,10 +36,10 @@ export default function Login() {
   return (
     <div className="login">
       { token
-        ? <a className="btn" href="/logout">Logout</a>
+        ? <a className="btn" href="#/logout">Logout</a>
         : <a className="btn" href={loginUrl}>Login to Spotify</a> }
       <HashRouter basename="/">
-        <Route path="/redirect" component={redirect} />
+        <Route path="/:access_token(access_token=.*)" component={redirect} />
         <Route path="/logout" component={logout} />
       </HashRouter>
     </div>
