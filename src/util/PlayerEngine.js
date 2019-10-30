@@ -9,6 +9,7 @@ export async function loadSongs(token, weatherData) {
       token,
       type: 'tracks',
     });
+
     const topSongIds = Promise.all(topSongs.items.map((e) => e.id));
 
     const recs = await getRecommendations({
@@ -23,10 +24,8 @@ export async function loadSongs(token, weatherData) {
     });
     playlist = [...playlist, ...audioTracks];
   } catch (e) {
-    console.log(e);
-  // break;
+    console.log('Session has expired. Login to Spotify.');
   }
-  // setPlaylist(plist);
   return playlist;
 }
 
@@ -47,4 +46,5 @@ export async function savePlaylist({
     playlistId,
     tracks: playlist.slice(0, limit).map((e) => e.uri),
   });
+  return playlistId;
 }

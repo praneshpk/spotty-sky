@@ -8,7 +8,6 @@ import { updateWeather } from '../actions';
 import './Player.scss';
 import { loadSongs, savePlaylist } from '../util/PlayerEngine';
 
-// eslint-disable-next-line react/prop-types
 export default function Player() {
   let player;
 
@@ -18,10 +17,17 @@ export default function Player() {
 
   const [desc, setDesc] = useState();
   const [playlist, setPlaylist] = useState([]);
+  const [embed, setEmbed] = useState();
   const limit = 30;
   const [background, setBackground] = useState('rbga(255,255,255,1)');
 
   const playlistName = useRef(null);
+
+  const save = async () => setEmbed(await savePlaylist({
+    token, name: playlistName.current.value, limit, playlist,
+  }));
+
+  const load = async () => setPlaylist(await loadSongs(token, weather));
 
   useEffect(() => {
     let loc = 'q=New York, NY, US';
@@ -59,23 +65,16 @@ export default function Player() {
         <h1>Spotty Sky</h1>
         <h2>{ desc }</h2>
         <div className="flex controls">
-          <button type="button" onClick={async () => setPlaylist(await loadSongs(token, weather))}>Load Songs</button>
-
+          <button onClick={load}>Load Songs</button>
           {playlist.length > 0
           && (
             <div>
               <input type="text" placeholder="My Awesome Playlist" ref={playlistName} />
-              <button
-                type="button"
-                onClick={() => savePlaylist({
-                  token, name: playlistName.current.value, limit, playlist,
-                })}
-              >
-              Save playlist
-              </button>
+              <button onClick={save}>Save playlist</button>
             </div>
           )}
         </div>
+        { embed && <iframe src={`https://open.spotify.com/embed/playlist/${embed}`} title="Playlist" height="400" frameBorder="0" allow="encrypted-media" />}
         <Code title="Weather (JSON Response)">
           {JSON.stringify(weather)}
         </Code>
